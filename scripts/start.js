@@ -18,7 +18,7 @@ process.env.NODE_ENV = 'development';
 
 // Tools like Cloud9 rely on this.
 const HOST = process.env.HOST || '0.0.0.0';
-const DEFAULT_PORT = 3000;
+const DEFAULT_PORT = parseInt(process.env.PORT, 10) || 4349;
 
 // Set the extension secret as an environment variable if it was passed in via command line args
 if (cmdOptions.secret) {
@@ -65,6 +65,12 @@ process.on('unhandledRejection', err => {
 });
 
 // Ensure environment variables are read.
+if (!process.env.RIG_CLIENT_ID) {
+  process.env.RIG_CLIENT_ID = '7db8cgf6p0b43n3yzwfu6i04hp8f4b';
+}
+if (!process.env.RIG_URL) {
+  process.env.RIG_URL = `http://${process.env.HOST || 'localhost'}:${DEFAULT_PORT}`;
+}
 require('../config/env');
 
 const webpack = require('webpack');
@@ -90,7 +96,7 @@ if (!checkRequiredFiles([paths.appHtml, paths.appIndex])) {
 if (process.env.HOST) {
   console.log(
     chalk.cyan(
-      `Binding to HOST environment variable and DEFAULT_PORT:${EOL}${chalk.yellow(
+      `Binding to HOST and PORT environment variables:${EOL}${chalk.yellow(
         chalk.bold(`${process.env.HOST}:${DEFAULT_PORT}`)
       )}`
     )

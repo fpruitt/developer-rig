@@ -61,9 +61,9 @@ module.exports = function(app) {
   app.get('/coordinator.js', (_req, res) => getResource('https://extension-files.twitch.tv/coordinator/7.22.2/extension-coordinator.umd.js', [
     { name: 'Content-Type', value: 'application/javascript' },
   ], [
-      { source: 'https://supervisor.ext-twitch.tv', target: 'http://localhost:3000' },
+      { source: 'https://supervisor.ext-twitch.tv', target: process.env.RIG_URL },
       { source: 's?:\\/\\/([\\w-]+\\.)*twitch\\.(tv|tech)(:\\d+)?\\/.*$', target: '' },
-      { source: 's://client-event-reporter.twitch.tv', target: '://localhost:3000' },
+      { source: 'https://client-event-reporter.twitch.tv', target: process.env.RIG_URL },
       { source: '/v1/index', target: '' },
       { source: '# sourceMappingURL=', target: '' },
     ], res));

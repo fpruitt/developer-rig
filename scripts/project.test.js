@@ -3,6 +3,7 @@ const project = require('./project');
 const rmrf = require('./rmrf');
 
 // Configure the project module.
+process.env.RIG_URL = 'http://test.local';
 const getRoutes = {};
 const postRoutes = {};
 const app = {

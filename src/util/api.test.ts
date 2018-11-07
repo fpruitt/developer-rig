@@ -287,7 +287,7 @@ describe('api', () => {
   it('starts back end', async () => {
     globalAny.fetch = jest.fn().mockImplementation(() => Promise.resolve({ status: 200, json: () => Promise.resolve({}) }));
     await startBackend('backendCommand', 'projectFolderPath');
-    expect(globalAny.fetch).toHaveBeenCalledWith('https://localhost.rig.twitch.tv:3000/backend', {
+    expect(globalAny.fetch).toHaveBeenCalledWith(`${process.env.RIG_URL}/backend`, {
       body: JSON.stringify({ backendCommand: 'backendCommand', projectFolderPath: 'projectFolderPath' }),
       headers: {
         Accept: 'application/vnd.twitchtv.v5+json; charset=UTF-8',
@@ -301,7 +301,7 @@ describe('api', () => {
   it('starts front end', async () => {
     globalAny.fetch = jest.fn().mockImplementation(() => Promise.resolve({ status: 200, json: () => Promise.resolve({}) }));
     await startFrontend('frontendFolderPath', 'frontendCommand', 'projectFolderPath');
-    expect(globalAny.fetch).toHaveBeenCalledWith('https://localhost.rig.twitch.tv:3000/frontend', {
+    expect(globalAny.fetch).toHaveBeenCalledWith(`${process.env.RIG_URL}/frontend`, {
       body: JSON.stringify({
         frontendFolderPath: 'frontendFolderPath',
         frontendCommand: 'frontendCommand',

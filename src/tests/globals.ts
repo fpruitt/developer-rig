@@ -21,6 +21,8 @@ export function mockGlobals() {
   globalAny.process.env.EXT_CLIENT_ID = 'test';
   globalAny.process.env.EXT_SECRET = 'test';
   globalAny.process.env.EXT_VERSION = 'test';
+  globalAny.process.env.RIG_CLIENT_ID = 'test';
+  globalAny.process.env.RIG_URL = 'http://test.local';
 
   globalAny.localStorage = new LocalStorage();
 

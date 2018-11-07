@@ -87,6 +87,8 @@ function getClientEnvironment(publicUrl) {
   raw['EXT_SECRET'] = process.env.EXT_SECRET || '';
   raw['EXT_VERSION'] = process.env.EXT_VERSION || '';
   raw['GIT_RELEASE'] = process.env.GIT_RELEASE || '';
+  raw['RIG_CLIENT_ID'] = process.env.RIG_CLIENT_ID;
+  raw['RIG_URL'] = process.env.RIG_URL;
 
   // Stringify all values so we can feed into Webpack DefinePlugin
   const stringified = {
