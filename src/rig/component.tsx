@@ -22,6 +22,7 @@ import { ConfigurationServiceView } from '../configuration-service-view';
 import { fetchIdForUser } from '../util/id';
 import { LocalStorageKeys } from '../constants/rig';
 import { BrowserRouter, Route, Redirect } from 'react-router-dom';
+import { ProjectNav } from '../project-nav';
 
 export interface ReduxStateProps {
   session: UserSession;
@@ -37,7 +38,7 @@ interface State {
   configurations?: Configurations;
   currentProject?: RigProject,
   showingCreateProjectDialog: boolean;
-  selectedView?: NavItem;
+  selectedView?: string;
   extensionsViewContainerKey: number;
   userId?: string;
   error?: string;
@@ -191,38 +192,37 @@ export class RigComponent extends React.Component<Props, State> {
           <CreateProjectDialog userId={this.state.userId} saveHandler={this.createProject} />
         ) : (
           <BrowserRouter><>
-            {this.needsRedirect() && <Redirect to={this.state.selectedView} push />}
-            <Route path="/" render={({ location }) => <RigNav {...location}
-              currentProjectIndex={this.currentProjectIndex}
-              projects={this.state.projects}
-              createNewProject={this.showCreateProjectDialog}
-              selectProject={this.selectProject}
+            {this.needsRedirect() && <Redirect to={this.state.selectedView} />}
+            <ProjectNav projects={this.state.projects} createProject={this.showCreateProjectDialog} />
+            <Route path="/:projectIndex" render={({ location }) => <>
+            <Route path="/" render={() => <RigNav {...location}
+              projectIndex={Number(location.pathname.split('/')[1])}
               manifest={currentProject.manifest}
               deleteProject={this.deleteProject}
             />} />
-            <Route exact path={NavItem.ProductManagement} render={() => (
+            <Route exact path={`/:projectIndex${NavItem.ProductManagement}`} render={() => (
               this.props.session && this.props.session.login && currentProject.manifest && currentProject.manifest.bitsEnabled ?
-                <ProductManagementViewContainer clientId={currentProject.manifest.id} /> :
+                <ProductManagementViewContainer {...location} clientId={currentProject.manifest.id} /> :
                 <Redirect to={NavItem.ProjectOverview} />
             )} />
-            <Route exact path={NavItem.ProjectOverview} render={() => <ProjectView
+            <Route exact path={`/:projectIndex${NavItem.ProjectOverview}`} render={() => <ProjectView {...location}
               key={`ProjectView${this.currentProjectIndex}`}
               rigProject={currentProject}
               userId={this.state.userId}
               onChange={this.updateProject}
               refreshViews={this.refreshViews}
             />} />
-            {configurations && <Route exact path={NavItem.ConfigurationService} render={() => <ConfigurationServiceView
+            {configurations && <Route exact path={`/:projectIndex${NavItem.ConfigurationService}`} render={() => <ConfigurationServiceView {...location}
               authToken={this.props.session.authToken}
               configurations={configurations}
               rigProject={currentProject}
               userId={this.state.userId}
               saveHandler={this.saveConfiguration}
             />} />}
-            {configurations && <Route path="/" render={({ location }) => <ExtensionViewContainer
+            {configurations && <Route path="/:projectIndex" render={() => <ExtensionViewContainer {...location}
               key={`ExtensionViewContainer${this.state.extensionsViewContainerKey}`}
               configurations={configurations}
-              isDisplayed={location.pathname === NavItem.ExtensionViews}
+              isDisplayed={location.pathname.endsWith(NavItem.ExtensionViews)}
               deleteExtensionViewHandler={this.deleteExtensionView}
               extensionViews={currentProject.extensionViews}
               manifest={currentProject.manifest}
@@ -235,6 +235,7 @@ export class RigComponent extends React.Component<Props, State> {
               closeHandler={this.closeProjectDialog}
               saveHandler={this.createProject}
             />}
+            </>} />
           </></BrowserRouter>
         )}
       </div>
@@ -244,7 +245,7 @@ export class RigComponent extends React.Component<Props, State> {
   private needsRedirect = (): boolean => {
     if (this.state.selectedView) {
       setTimeout(() => this.setState({ selectedView: null }));
-      return true;
+      return !location.pathname.endsWith(this.state.selectedView);
     }
     return false;
   }
@@ -267,8 +268,9 @@ export class RigComponent extends React.Component<Props, State> {
     const { userId } = this.state;
     if (projectsValue) {
       const projects = JSON.parse(projectsValue) as RigProject[];
-      const currentProject = projects[Number(localStorage.getItem(LocalStorageKeys.CurrentProjectIndex) || 0)];
-      this.setState({ currentProject, projects });
+      const currentProjectIndex = Number(localStorage.getItem(LocalStorageKeys.CurrentProjectIndex) || 0);
+      const currentProject = projects[currentProjectIndex];
+      this.setState({ currentProject, projects, selectedView: `/${currentProjectIndex}` });
       const { manifest, extensionViews, secret } = currentProject;
       await this.updateConfiguration(manifest, extensionViews, this.state.userId, secret);
     } else if (process.env.EXT_CLIENT_ID && process.env.EXT_SECRET && process.env.EXT_VERSION) {

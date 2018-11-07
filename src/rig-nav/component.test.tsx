@@ -13,7 +13,7 @@ const defaultGenerator = () => ({
   manifest: createExtensionManifestForTest(),
   session: { displayName: 'test', login: 'test', id: 'test', profileImageUrl: 'test.png', authToken: 'test' },
   mockApiEnabled: false,
-  currentProjectIndex: 0,
+  projectIndex: 0,
   projects: [] as RigProject[],
   createNewProject: () => { },
   deleteProject: jest.fn(),

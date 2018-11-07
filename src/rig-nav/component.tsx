@@ -5,10 +5,10 @@ import { NavItem } from '../constants/nav-items';
 import { UserDropdown } from '../user-dropdown';
 import { UserSession } from '../core/models/user-session';
 import { ExtensionManifest } from '../core/models/manifest';
-import { ProjectDropdown, Props as ProjectDropdownProps } from './project-dropdown';
 import { NavLink } from 'react-router-dom';
 
 export interface PublicProps {
+  projectIndex: number,
   manifest: ExtensionManifest,
   deleteProject: () => void,
 }
@@ -18,7 +18,7 @@ export interface ReduxStateProps {
   mockApiEnabled?: boolean,
 }
 
-type Props = PublicProps & ProjectDropdownProps & ReduxStateProps;
+type Props = PublicProps & ReduxStateProps;
 
 export class RigNavComponent extends React.Component<Props> {
   public render() {
@@ -32,12 +32,6 @@ export class RigNavComponent extends React.Component<Props> {
       return (
         <div className='top-nav'>
           <div className='personal-bar'>
-            <ProjectDropdown
-              currentProjectIndex={this.props.currentProjectIndex}
-              projects={this.props.projects}
-              createNewProject={this.props.createNewProject}
-              selectProject={this.props.selectProject}
-            />
             {manifest && <div className='personal-bar__ext-name'>
               <span>{manifest.name}</span>
               <button className="personal-bar__button" onClick={this.props.deleteProject}>Delete</button>
@@ -47,16 +41,16 @@ export class RigNavComponent extends React.Component<Props> {
             </div>}
           </div>
           <div className='top-nav__item-container'>
-            <NavLink className="offset top-nav-item" to={NavItem.ProjectOverview} exact={true} activeClassName="top-nav-item__selected">
+            <NavLink className="offset top-nav-item" to={`/${this.props.projectIndex}${NavItem.ProjectOverview}`} exact={true} activeClassName="top-nav-item__selected">
               Project Overview
             </NavLink>
-            <NavLink className="offset top-nav-item" to={NavItem.ExtensionViews} exact={true} activeClassName="top-nav-item__selected">
+            <NavLink className="offset top-nav-item" to={`/${this.props.projectIndex}${NavItem.ExtensionViews}`} exact={true} activeClassName="top-nav-item__selected">
               Extension Views
             </NavLink>
-            <NavLink className={productManagementClass} to={NavItem.ProductManagement} exact={true} activeClassName="top-nav-item__selected">
+            <NavLink className={productManagementClass} to={`/${this.props.projectIndex}${NavItem.ProductManagement}`} exact={true} activeClassName="top-nav-item__selected">
               Manage Bits Products
             </NavLink>
-            <NavLink className={configurationServiceClass} to={NavItem.ConfigurationService} exact={true} activeClassName="top-nav-item__selected">
+            <NavLink className={configurationServiceClass} to={`/${this.props.projectIndex}${NavItem.ConfigurationService}`} exact={true} activeClassName="top-nav-item__selected">
               Configuration Service
             </NavLink>
           </div>
