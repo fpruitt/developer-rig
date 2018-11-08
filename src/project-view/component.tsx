@@ -7,6 +7,7 @@ import { fetchUserExtensionManifest } from '../util/extension';
 export interface ProjectViewProps {
   rigProject: RigProject,
   userId: string;
+  deleteProject: () => void,
   onChange: (rigProject: RigProject) => void,
   refreshViews: () => void,
 }
@@ -172,6 +173,7 @@ export class ProjectView extends React.Component<ProjectViewProps, State>{
           <label className="project-view-property project-view-grid__column-1">
             <div className="project-view-property__name">Project Name</div>
             <input className="project-view-property__input project-view-property__input--half" type="text" name="name" value={rigProject.manifest.name} onChange={this.onChange} />
+              <button onClick={this.props.deleteProject}>Delete</button>
           </label>
           <label className="project-view-property project-view-grid__column-2">
             <div className="project-view-property__name">Version</div>

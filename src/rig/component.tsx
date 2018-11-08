@@ -201,7 +201,6 @@ export class RigComponent extends React.Component<Props, State> {
             <Route path="/:projectIndex" render={(props: RouteComponentProps<{ projectIndex: string }>) => <RigNav
               projectIndex={Number(props.match.params.projectIndex)}
               manifest={currentProject.manifest}
-              deleteProject={this.deleteProject}
             />} />
             <Route exact path={`/:projectIndex${NavItem.ProductManagement}`} render={({ location }) => (
               this.props.session.login && currentProject.manifest && currentProject.manifest.bitsEnabled ?
@@ -211,6 +210,7 @@ export class RigComponent extends React.Component<Props, State> {
             <Route exact path={`/:projectIndex${NavItem.ProjectOverview}`} render={({ location }) => <ProjectView {...location}
               rigProject={currentProject}
               userId={this.state.userId}
+              deleteProject={this.deleteProject}
               onChange={this.updateProject}
               refreshViews={this.refreshViews}
             />} />

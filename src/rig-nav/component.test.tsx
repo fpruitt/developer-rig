@@ -16,7 +16,6 @@ const defaultGenerator = () => ({
   projectIndex: 0,
   projects: [] as RigProject[],
   createNewProject: () => { },
-  deleteProject: jest.fn(),
   selectProject: (_projectIndex: number) => { },
 });
 
@@ -26,12 +25,6 @@ describe('<RigNavComponent />', () => {
   it('renders correctly', () => {
     const { wrapper } = setupShallow();
     expect(wrapper).toMatchSnapshot();
-  });
-
-  it('invokes deleteProject', () => {
-    const { wrapper } = setupShallow();
-    wrapper.find('.personal-bar__button').first().simulate('click');
-    expect(wrapper.instance().props.deleteProject).toHaveBeenCalled();
   });
 
   it('correct css classes are set when things are selected', () => {

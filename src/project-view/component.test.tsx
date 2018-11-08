@@ -33,6 +33,7 @@ describe('<ProjectView />', () => {
   const setupShallow = setupShallowTest(ProjectView, () => ({
     rigProject: { ...rigProject },
     userId: '999999999',
+    deleteProject: jest.fn(),
     onChange: jest.fn(),
     refreshViews: jest.fn(),
   }));
@@ -40,6 +41,12 @@ describe('<ProjectView />', () => {
   it('renders correctly', () => {
     const { wrapper } = setupShallow();
     expect(wrapper).toMatchSnapshot();
+  });
+
+  it('invokes deleteProject', () => {
+    const { wrapper } = setupShallow();
+    wrapper.find('.personal-bar__button').first().simulate('click');
+    expect(wrapper.instance().props.deleteProject).toHaveBeenCalled();
   });
 
   describe('onChange', () => {

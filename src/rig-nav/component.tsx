@@ -9,7 +9,6 @@ import { NavLink } from 'react-router-dom';
 export interface PublicProps {
   projectIndex: number,
   manifest: ExtensionManifest,
-  deleteProject: () => void,
 }
 
 export interface ReduxStateProps {
@@ -33,7 +32,6 @@ export class RigNavComponent extends React.Component<Props> {
           <div className='personal-bar'>
             {manifest && <div className='personal-bar__ext-name'>
               <span>{manifest.name}</span>
-              <button className="personal-bar__button" onClick={this.props.deleteProject}>Delete</button>
             </div>}
           </div>
           <div className='top-nav__item-container'>
