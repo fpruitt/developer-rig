@@ -34,10 +34,14 @@ export class ProjectView extends React.Component<ProjectViewProps, State>{
     version: this.props.rigProject.manifest.version,
   };
 
-  constructor(props: ProjectViewProps) {
-    super(props);
-    fetchHostingStatus().then((status) => {
-      const { rigProject } = props;
+  componentDidMount() {
+    this.componentDidUpdate({} as ProjectViewProps);
+  }
+
+  async componentDidUpdate(prevProps: ProjectViewProps) {
+    if (prevProps.rigProject !== this.props.rigProject) {
+      const status = await fetchHostingStatus();
+      const { rigProject } = this.props;
       const frontend = rigProject.projectFolderPath || rigProject.frontendFolderName || rigProject.frontendCommand;
       this.setState({
         backendResult: getStatus(rigProject.backendCommand, status.isBackendRunning),
@@ -47,7 +51,7 @@ export class ProjectView extends React.Component<ProjectViewProps, State>{
       function getStatus(value: string, isRunning: boolean): HostingResult {
         return value ? isRunning ? HostingResult.Running : HostingResult.NotRunning : HostingResult.None;
       }
-    });
+    }
   }
 
   public onChange = (input: React.FormEvent<HTMLInputElement>) => {
@@ -169,14 +173,14 @@ export class ProjectView extends React.Component<ProjectViewProps, State>{
             <div className="project-view-property__name">Project Name</div>
             <input className="project-view-property__input project-view-property__input--half" type="text" name="name" value={rigProject.manifest.name} onChange={this.onChange} />
           </label>
-            <label className="project-view-property project-view-grid__column-2">
-              <div className="project-view-property__name">Version</div>
-              <input className="project-view-property__input project-view-property__input--third" type="text" name="version" value={this.state.version} onChange={this.onChangeVersion} />
-            </label>
-            <div className="project-view-grid__column-3">
-              <button className="project-view__button" onClick={this.updateByVersion}>Update</button>
-              <div title="This is the result of updating the extension by version." className="project-view-property__result">{this.state.updateResult}</div>
-            </div>
+          <label className="project-view-property project-view-grid__column-2">
+            <div className="project-view-property__name">Version</div>
+            <input className="project-view-property__input project-view-property__input--third" type="text" name="version" value={this.state.version} onChange={this.onChangeVersion} />
+          </label>
+          <div className="project-view-grid__column-3">
+            <button className="project-view__button" onClick={this.updateByVersion}>Update</button>
+            <div title="This is the result of updating the extension by version." className="project-view-property__result">{this.state.updateResult}</div>
+          </div>
           <label className="project-view-property project-view-grid__column-1-2" title="This is the path to your front-end files relative to the Project Folder.  If there is no Project Folder, ensure this path is absolute.">
             <div className="project-view-property__name">Front-end Files Location</div>
             <input className="project-view-property__input" type="text" name="frontendFolderName" value={rigProject.frontendFolderName} onChange={this.onChange} />
@@ -217,17 +221,17 @@ export class ProjectView extends React.Component<ProjectViewProps, State>{
             <div className="project-view-property__name">Client ID</div>
             <div className="project-view-property__value">{rigProject.manifest.id}</div>
           </label>
-              <label className="project-view-property project-view-grid__column-1">
-                <button className="project-view__button project-view__button--first" onClick={this.refreshManifest}>Refresh Manifest</button>
-              </label>
-              <label className="project-view-property project-view-grid__column-1-2">
-                Make sure your Asset Paths are correct. Your "Testing Base URI" must
-                be https://localhost.rig.twitch.tv:8080/ to use the Developer Rig.
-                Also, ensure the individual Extension Type paths are correct.
-                Click <a href={`https://dev.twitch.tv/projects/${rigProject.manifest.id}/files`} target="dev-site">here</a> then
-                click "Manage" for version {rigProject.manifest.version} then
-                click "Asset Hosting" to check and adjust if needed.
-              </label>
+          <label className="project-view-property project-view-grid__column-1">
+            <button className="project-view__button project-view__button--first" onClick={this.refreshManifest}>Refresh Manifest</button>
+          </label>
+          <label className="project-view-property project-view-grid__column-1-2">
+            Make sure your Asset Paths are correct. Your "Testing Base URI" must
+            be https://localhost.rig.twitch.tv:8080/ to use the Developer Rig.
+            Also, ensure the individual Extension Type paths are correct.
+            Click <a href={`https://dev.twitch.tv/projects/${rigProject.manifest.id}/files`} target="dev-site">here</a> then
+            click "Manage" for version {rigProject.manifest.version} then
+            click "Asset Hosting" to check and adjust if needed.
+          </label>
         </div>
         <div className="project-view__vertical-bar" />
         <div className="project-view__section">
