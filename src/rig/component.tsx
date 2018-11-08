@@ -198,31 +198,30 @@ export class RigComponent extends React.Component<Props, State> {
               this.selectProject(projectIndex);
               return null;
             }} />
-            <Route path="/:projectIndex" render={({ location }) => <>
-            <Route path="/" render={() => <RigNav {...location}
-              projectIndex={Number(location.pathname.split('/')[1])}
+            <Route path="/:projectIndex" render={(props: RouteComponentProps<{ projectIndex: string }>) => <RigNav
+              projectIndex={Number(props.match.params.projectIndex)}
               manifest={currentProject.manifest}
               deleteProject={this.deleteProject}
             />} />
-            <Route exact path={`/:projectIndex${NavItem.ProductManagement}`} render={() => (
+            <Route exact path={`/:projectIndex${NavItem.ProductManagement}`} render={({ location }) => (
               this.props.session && this.props.session.login && currentProject.manifest && currentProject.manifest.bitsEnabled ?
                 <ProductManagementViewContainer {...location} clientId={currentProject.manifest.id} /> :
                 <Redirect to={NavItem.ProjectOverview} />
             )} />
-            <Route exact path={`/:projectIndex${NavItem.ProjectOverview}`} render={() => <ProjectView {...location}
+            <Route exact path={`/:projectIndex${NavItem.ProjectOverview}`} render={({ location }) => <ProjectView {...location}
               rigProject={currentProject}
               userId={this.state.userId}
               onChange={this.updateProject}
               refreshViews={this.refreshViews}
             />} />
-            {configurations && <Route exact path={`/:projectIndex${NavItem.ConfigurationService}`} render={() => <ConfigurationServiceView {...location}
+            {configurations && <Route exact path={`/:projectIndex${NavItem.ConfigurationService}`} render={({ location }) => <ConfigurationServiceView {...location}
               authToken={this.props.session.authToken}
               configurations={configurations}
               rigProject={currentProject}
               userId={this.state.userId}
               saveHandler={this.saveConfiguration}
             />} />}
-            {configurations && <Route path="/:projectIndex" render={() => <ExtensionViewContainer {...location}
+            {configurations && <Route path="/:projectIndex" render={({ location }) => <ExtensionViewContainer {...location}
               key={`ExtensionViewContainer${this.state.extensionsViewContainerKey}`}
               configurations={configurations}
               isDisplayed={location.pathname.endsWith(NavItem.ExtensionViews)}
@@ -238,7 +237,6 @@ export class RigComponent extends React.Component<Props, State> {
               closeHandler={this.closeProjectDialog}
               saveHandler={this.createProject}
             />}
-            </>} />
           </></BrowserRouter>
         )}
       </div>
