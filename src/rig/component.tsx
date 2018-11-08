@@ -204,9 +204,9 @@ export class RigComponent extends React.Component<Props, State> {
               deleteProject={this.deleteProject}
             />} />
             <Route exact path={`/:projectIndex${NavItem.ProductManagement}`} render={({ location }) => (
-              this.props.session && this.props.session.login && currentProject.manifest && currentProject.manifest.bitsEnabled ?
+              this.props.session.login && currentProject.manifest && currentProject.manifest.bitsEnabled ?
                 <ProductManagementViewContainer {...location} clientId={currentProject.manifest.id} /> :
-                <Redirect to={NavItem.ProjectOverview} />
+                <Redirect to={`/:projectIndex${NavItem.ProjectOverview}`} />
             )} />
             <Route exact path={`/:projectIndex${NavItem.ProjectOverview}`} render={({ location }) => <ProjectView {...location}
               rigProject={currentProject}

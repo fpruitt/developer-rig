@@ -64,28 +64,22 @@ export class UserDropdownComponent extends React.Component<Props, State> {
       return null;
     }
     const { login, profileImageUrl } = this.props.session;
-    const usernameClasses = classNames({
-      'user-dropdown__username': true,
-      'open': this.state.open,
-    });
     const dropdownClass = classNames({
       'user-dropdown__menu': true,
-      'transition': true,
-      'open': this.state.open,
+      'user-dropdown__menu--open': this.state.open,
     });
     const triangleClass = classNames({
       'user-dropdown__triangle': true,
-      'open': this.state.open,
+      'user-dropdown__triangle--open': this.state.open,
     });
 
     return (
-      <div onClick={this.toggleDropdown} className='user-dropdown' tabIndex={0}>
-        <div className='user-dropdown__name-container'>
+      <div onClick={this.toggleDropdown} className='user-dropdown'>
+        <div className='user-dropdown__tab'>
           {this.state.showingNewRelease && (
-            <img alt='!' title='Rig Update Available' src={reddot} width='8' height='8' />
+            <img className='user-dropdown__release' alt='!' title='Rig Update Available' src={reddot} width='8' height='8' />
           )}
           <img alt={login} className='user-dropdown__image' src={profileImageUrl} />
-          <div className={usernameClasses}>{login}</div>
           <img src={whitetriangle} className={triangleClass} />
         </div>
         <div className={dropdownClass}>

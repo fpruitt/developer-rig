@@ -2,7 +2,6 @@ import * as React from 'react';
 import * as classNames from 'classnames';
 import './component.sass';
 import { NavItem } from '../constants/nav-items';
-import { UserDropdown } from '../user-dropdown';
 import { UserSession } from '../core/models/user-session';
 import { ExtensionManifest } from '../core/models/manifest';
 import { NavLink } from 'react-router-dom';
@@ -35,9 +34,6 @@ export class RigNavComponent extends React.Component<Props> {
             {manifest && <div className='personal-bar__ext-name'>
               <span>{manifest.name}</span>
               <button className="personal-bar__button" onClick={this.props.deleteProject}>Delete</button>
-            </div>}
-            {session && session.login && <div className='top-nav-item__login'>
-              <UserDropdown session={session} />
             </div>}
           </div>
           <div className='top-nav__item-container'>
