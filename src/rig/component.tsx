@@ -21,7 +21,7 @@ import { CreateProjectDialog } from '../create-project-dialog';
 import { ConfigurationServiceView } from '../configuration-service-view';
 import { fetchIdForUser } from '../util/id';
 import { LocalStorageKeys } from '../constants/rig';
-import { BrowserRouter, Route, Redirect } from 'react-router-dom';
+import { BrowserRouter, Route, Redirect, RouteComponentProps } from 'react-router-dom';
 import { ProjectNav } from '../project-nav';
 
 export interface ReduxStateProps {
@@ -52,8 +52,6 @@ export class RigComponent extends React.Component<Props, State> {
     showingCreateProjectDialog: false,
     extensionsViewContainerKey: 0,
   }
-
-  get currentProjectIndex() { return this.state.projects.indexOf(this.state.currentProject); }
 
   constructor(props: Props) {
     super(props);
@@ -126,10 +124,11 @@ export class RigComponent extends React.Component<Props, State> {
     await this.updateConfiguration(manifest, extensionViews, this.state.userId, secret);
     this.setState((previousState) => {
       const previousProjects = previousState.currentProject ? previousState.projects : [];
-      localStorage.setItem(LocalStorageKeys.CurrentProjectIndex, previousProjects.length.toString());
+      const currentProjectIndex = previousProjects.length;
+      localStorage.setItem(LocalStorageKeys.CurrentProjectIndex, currentProjectIndex.toString());
       const projects = [...previousProjects, project];
       localStorage.setItem(LocalStorageKeys.Projects, JSON.stringify(projects));
-      return { currentProject: project, projects, selectedView: NavItem.ProjectOverview, showingCreateProjectDialog: false };
+      return { currentProject: project, projects, selectedView: `/${currentProjectIndex}${NavItem.ProjectOverview}`, showingCreateProjectDialog: false };
     });
   }
 
@@ -150,10 +149,10 @@ export class RigComponent extends React.Component<Props, State> {
     const selectedProject = this.state.projects[projectIndex];
     if (selectedProject !== this.state.currentProject) {
       await stopHosting();
-      this.setState({ configurations: null, currentProject: selectedProject, selectedView: NavItem.ProjectOverview });
+      this.setState({ configurations: null, currentProject: selectedProject, selectedView: `/${projectIndex}${NavItem.ProjectOverview}` });
       await this.updateConfiguration(selectedProject.manifest, selectedProject.extensionViews, this.state.userId, selectedProject.secret);
       this.refreshViews();
-      localStorage.setItem(LocalStorageKeys.CurrentProjectIndex, this.currentProjectIndex.toString());
+      localStorage.setItem(LocalStorageKeys.CurrentProjectIndex, projectIndex.toString());
     }
   }
 
@@ -174,7 +173,7 @@ export class RigComponent extends React.Component<Props, State> {
         return {
           currentProject, projects,
           extensionsViewContainerKey: previousState.extensionsViewContainerKey + 1,
-          selectedView: NavItem.ProjectOverview,
+          selectedView: `/0${NavItem.ProjectOverview}`,
         };
       });
     }
@@ -194,6 +193,11 @@ export class RigComponent extends React.Component<Props, State> {
           <BrowserRouter><>
             {this.needsRedirect() && <Redirect to={this.state.selectedView} />}
             <ProjectNav projects={this.state.projects} createProject={this.showCreateProjectDialog} />
+            <Route path={'/:projectIndex'} render={(props: RouteComponentProps<{ projectIndex: string }>) => {
+              const projectIndex = Number(props.match.params.projectIndex);
+              this.selectProject(projectIndex);
+              return null;
+            }} />
             <Route path="/:projectIndex" render={({ location }) => <>
             <Route path="/" render={() => <RigNav {...location}
               projectIndex={Number(location.pathname.split('/')[1])}
@@ -206,7 +210,6 @@ export class RigComponent extends React.Component<Props, State> {
                 <Redirect to={NavItem.ProjectOverview} />
             )} />
             <Route exact path={`/:projectIndex${NavItem.ProjectOverview}`} render={() => <ProjectView {...location}
-              key={`ProjectView${this.currentProjectIndex}`}
               rigProject={currentProject}
               userId={this.state.userId}
               onChange={this.updateProject}
@@ -245,7 +248,7 @@ export class RigComponent extends React.Component<Props, State> {
   private needsRedirect = (): boolean => {
     if (this.state.selectedView) {
       setTimeout(() => this.setState({ selectedView: null }));
-      return !location.pathname.endsWith(this.state.selectedView);
+      return !location.pathname.startsWith(this.state.selectedView);
     }
     return false;
   }
@@ -270,7 +273,7 @@ export class RigComponent extends React.Component<Props, State> {
       const projects = JSON.parse(projectsValue) as RigProject[];
       const currentProjectIndex = Number(localStorage.getItem(LocalStorageKeys.CurrentProjectIndex) || 0);
       const currentProject = projects[currentProjectIndex];
-      this.setState({ currentProject, projects, selectedView: `/${currentProjectIndex}` });
+      this.setState({ currentProject, projects, selectedView: `/${currentProjectIndex}${NavItem.ProjectOverview}` });
       const { manifest, extensionViews, secret } = currentProject;
       await this.updateConfiguration(manifest, extensionViews, this.state.userId, secret);
     } else if (process.env.EXT_CLIENT_ID && process.env.EXT_SECRET && process.env.EXT_VERSION) {
